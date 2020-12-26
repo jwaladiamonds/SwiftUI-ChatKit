@@ -5,9 +5,10 @@ struct MessageView: UIViewRepresentable {
     @Binding var text: String
     @Binding var height: CGFloat
     var placeholder: String
+    @State var isEditing: Bool = false
     
     func makeCoordinator() -> Coordiator {
-        return MessageField.Coordiator(parent: self, placeholder: placeholder)
+        return MessageView.Coordiator(parent: self)
     }
     
     func makeUIView(context: Context) -> UITextView {
@@ -23,31 +24,31 @@ struct MessageView: UIViewRepresentable {
     }
     
     func updateUIView(_ textView: UITextView, context: Context) {
+        if self.text == "" {
+            textView.text = self.isEditing ? "" : self.placeholder
+            textView.textColor = self.isEditing ? .label : .lightGray
+        }
         DispatchQueue.main.async {
             self.height = textView.contentSize.height
         }
     }
     
     class Coordiator: NSObject, UITextViewDelegate {
-        var parent: MessageField
-        var placeholder: String
+        var parent: MessageView
         
-        init(parent: MessageField, placeholder: String) {
+        init(parent: MessageView) {
             self.parent = parent
-            self.placeholder = placeholder
         }
         
         func textViewDidBeginEditing(_ textView: UITextView) {
-            if self.parent.text == "" {
-                textView.text = ""
-                textView.textColor = .label
+            DispatchQueue.main.async {
+                self.parent.isEditing = true
             }
         }
         
         func textViewDidEndEditing(_ textView: UITextView) {
-            if self.parent.text == "" {
-                textView.text = placeholder
-                textView.textColor = .lightGray
+            DispatchQueue.main.async {
+                self.parent.isEditing = false
             }
         }
         
@@ -57,6 +58,7 @@ struct MessageView: UIViewRepresentable {
                 self.parent.text = textView.text
             }
         }
+        
     }
 }
 
@@ -68,9 +70,10 @@ struct MessageField: View {
     var sendText: () -> ()
     
     var body: some View {
-        MessageView(text: self.$text, height: self.$height)
+        MessageView(text: self.$text, height: self.$height, placeholder: self.placeholder)
             .frame(height: self.height < 150 ? self.height : 150)
             .padding(.horizontal)
             .background(Color(.systemBackground))
             .cornerRadius(10)
+    }
 }

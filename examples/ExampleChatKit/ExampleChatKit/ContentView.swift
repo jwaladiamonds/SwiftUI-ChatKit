@@ -8,9 +8,19 @@
 import SwiftUI
 
 struct ContentView: View {
+    @State var messages = [Message]()
     var body: some View {
-        Text("Hello, world!")
-            .padding()
+        MessageScrollView(messages: messages) { message in
+            ChatBubble(message: message).tag(message.id)
+        }
+        .onAppear {
+            let user1 = User(name: "Nikz")
+            let user2 = User(name: "Jon")
+            var m = Message(user: user1, text: "Hello wrold")
+            messages.append(m)
+            m = Message(user: user2, text: "Hello wrold 2")
+            messages.append(m)
+        }
     }
 }
 
