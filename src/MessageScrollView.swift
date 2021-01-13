@@ -28,5 +28,8 @@ struct MessageScrollView<Content: View>: View {
             }
         }
         .background(Color(.systemGroupedBackground))
+        .onTapGesture {
+            UIApplication.shared.windows.first?.rootViewController?.view.endEditing(true)
+        }
 	}
 }

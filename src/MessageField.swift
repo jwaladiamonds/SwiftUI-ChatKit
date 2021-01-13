@@ -70,10 +70,25 @@ struct MessageField: View {
     var sendText: () -> ()
     
     var body: some View {
-        MessageView(text: self.$text, height: self.$height, placeholder: self.placeholder)
-            .frame(height: self.height < 150 ? self.height : 150)
-            .padding(.horizontal)
-            .background(Color(.systemBackground))
-            .cornerRadius(10)
+        HStack {
+            MessageView(text: self.$text, height: self.$height, placeholder: self.placeholder)
+                .frame(height: self.height < 150 ? self.height : 150)
+                .padding(.horizontal)
+                .background(Color(.systemBackground))
+                .cornerRadius(10)
+            Button(action: {
+                if self.text.trimmingCharacters(in: .whitespacesAndNewlines) != "" {
+                    self.sendText()
+                    self.text = ""
+                    print("Message sent")
+                }
+            }, label: {
+                Image(systemName: "paperplane.fill")
+                    .resizable()
+                    .scaledToFit()
+                    .padding(12)
+                    .frame(height: 38, alignment: .center)
+            })
+        }
     }
 }
